@@ -1,7 +1,7 @@
 import serial
 import time
 
-ser = serial.Serial("COM12", 115200)
+ser = serial.Serial("/dev/ttyAM0", 115200)
 
 def getTFminiData():
     while True:
