@@ -1,4 +1,4 @@
-import serial, time
+import serial, time, struct
 
 def get_dist(ser, timeout=1):
     # First clear buffer
@@ -9,7 +9,8 @@ def get_dist(ser, timeout=1):
     
     stamp = time.monotonic()
     while (time.monotonic() - stamp) < timeout:
-        recv  = ser.read(1)
+        
+        x = ser.read(1)
         
         # First frame indicator
         if not x or x[0] != 0x59:
@@ -32,17 +33,15 @@ def get_dist(ser, timeout=1):
     raise RuntimeError("Timeout reached before ")
 
 
-def dump(ser, filename):
-    while(True):
-        with open(filename, 'w') as f:
-            f.write(f'{get_dist(ser)}\n')
 
 if __name__ == '__main__':
     try:
         ser = serial.Serial("/dev/ttyAMA0", 115200)
         if not ser.is_open:
             ser.open()
-        dump(ser, "dump.txt")
+        with open('dump.txt', 'w') as f:
+            while(True):
+                f.write(f'{get_dist(ser)}\n')
     except KeyboardInterrupt:
         if ser:
             ser.close()
